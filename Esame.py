@@ -22,35 +22,43 @@ class CSVTimeSeriesFile:
             data = []
     
             # Apro il file
-            my_file = open(self.name, 'r')
+            file = open(self.name, 'r')
 
-            for line in my_file:
+            for line in file:
                 
-                # Faccio lo split di ogni linea sulla virgola
                 elements = line.split(',')
                 
-                # Posso anche pulire il carattere di newline 
-                # dall'ultimo elemento con la funzione strip():
                 elements[-1] = elements[-1].strip()
                 
-                # p.s. in realta' strip() toglie anche gli spazi
-                # bianchi all'inizio e alla fine di una stringa.
-    
-                # Se NON sto processando l'intestazione...
                 if elements[0] != 'epoch':
                     
-                    # Aggiungo alla lista gli elementi di questa linea
                     data.append(elements)
             
-            # Chiudo il file
-            my_file.close()
+            file.close()
 
             return(data)
 
-#def compute_daily_max_difference(values):
+def compute_daily_max_difference(time_series):
     
-    #for line in values[1:len(values)]:
+    values  = []
+    temp = 0
 
+    for i in range(len(time_series)):
+        j = i
+        while (time_series[i][0] - (time_series[j][0] % 86400)) == time_series[i][0]:
+            if abs(time_series[i][1] - time_series[j][1]) > temp:
+                temp = abs(time_series[i][1] - time_series[j][1])
+            j+=1
+        values.append(temp)
+
+
+
+ 
+
+
+#==============================
+#  Corpo del programma
+#==============================
 
 time_series_file = CSVTimeSeriesFile(name='data.csv')
 
@@ -58,9 +66,13 @@ time_series = time_series_file.get_data()
 
 print('********************************')
 
+for i in range(len(time_series)):
+    time_series[i][0] = int(time_series[i][0])
+    time_series[i][1] = float(time_series[i][1])
+
+print(time_series[25][0])
+print((time_series[25][0] % 86400))
+day_start_epoch = time_series[25][0] - (time_series[25][0] % 86400)
+print(day_start_epoch)
+
 #compute_daily_max_difference(time_series)
-
-
-time_series[1]
-
-#print(x[0] - (x[0] % 86400))
