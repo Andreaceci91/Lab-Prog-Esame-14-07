@@ -70,9 +70,19 @@ for i in range(len(time_series)):
     time_series[i][0] = int(time_series[i][0])
     time_series[i][1] = float(time_series[i][1])
 
-print(time_series[25][0])
-print((time_series[25][0] % 86400))
-day_start_epoch = time_series[25][0] - (time_series[25][0] % 86400)
-print(day_start_epoch)
+#print(time_series[25][0])
+#print((time_series[25][0] % 86400))
+#day_start_epoch = time_series[25][0] - (time_series[25][0] % 86400)
+#print(day_start_epoch)
 
 #compute_daily_max_difference(time_series)
+
+x = time_series[1][0] - time_series[1][0] % 86400
+
+
+print(time_series[0][0])
+print(time_series[1][0] - time_series[1][0] % 86400)
+if time_series[0][0] == x:
+    print("Uguali")
+
+#day_start_epoch = epoch - (epoch % 86400)
