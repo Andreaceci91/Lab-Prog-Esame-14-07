@@ -1,35 +1,43 @@
-# Import CSV file and extract the values from file
-file = open('data.csv', 'r')
+#==============================
+#  Classe per file CSV
+#==============================
 
-values = []
+from pickle import FALSE, TRUE
 
-for line  in file:
+class CSVTimeSeriesFile:
+    def __init__(self, name):
+        self.name = name
 
-    values.append(line)
+        self.can_read = TRUE
+        try:
+            file = open('data.csv', 'r')
+            file.readline()
+        except Exception as error:
+            self.can_read = FALSE
+            print('Errore in apertura del file: "{}"'.format(error))
+    
+    def get_data(self):  
+            if not self.can_read:
+                
+                print('Errore, file non aperto o illeggibile')
+                return None 
+            else:
 
-time = []
-value = []
+                file = open('data.csv', 'r')
 
-# Check if the CSV file has a str header
+                values = []
 
-if values[0].split(',')[0] == 'epoch':
-    for line in values[1:len(values)]:
-        x = line.split(',')
-        time.append(x[0])
-        value.append(x[1])
-else:
-        for line in values:
-            x = line.split(',')
-            time.append(x[0])
-            value.append(x[1])
+                for line in file:
+                    line = line.strip()
+                    values.append(line)
+        
+                for line in values:
+                    print(line)
 
-file.close() 
+                return(values)
 
-print(time[0])
+time_series_file = CSVTimeSeriesFile(name='data.csv')
 
+time_series = time_series_file.get_data()
 
-
-
-
-
-
+print(time_series[1])
