@@ -2,6 +2,7 @@
 #  Classe per file CSV
 #==============================
 
+from lib2to3.pgen2.token import EQUAL
 from pickle import FALSE, TRUE
 from time import time
 
@@ -41,20 +42,28 @@ class CSVTimeSeriesFile:
 def compute_daily_max_difference(time_series):
     
     values  = []
-    temp = 0   
+    massimo = FALSE
 
     for i in range(len(time_series)):
+        temp = 0   
+        trovato = FALSE
         j = i
-        while (time_series[i][0] - (time_series[j][0] % 86400)) == time_series[i][0]:
-            if abs(time_series[i][1] - time_series[j][1]) > temp:
-                temp = abs(time_series[i][1] - time_series[j][1])
-            j+=1
-        values.append(temp)
+        #print("- i:",i)
+        while (time_series[j][0] - (time_series[j][0] % 86400)) == time_series[i][0] and massimo is not TRUE:
+            #print("j:", j,"=", time_series[j][0])
+            #print((time_series[j][0] - (time_series[j][0] % 86400)),"=",time_series[i][0])
+            if j == len(time_series)-1:
+                massimo = TRUE
+            else:
+                if abs(time_series[i][1] - time_series[j][1]) > temp:
+                    temp = abs(time_series[i][1] - time_series[j][1])
+                    trovato = TRUE 
+                j+=1
+        if(trovato is TRUE):
+            values.append(temp)
 
     return(values)
 
-
- 
 #==============================
 #  Corpo del programma
 #==============================
@@ -69,19 +78,25 @@ for i in range(len(time_series)):
     time_series[i][0] = int(time_series[i][0])
     time_series[i][1] = float(time_series[i][1])
 
+results = compute_daily_max_difference(time_series)
+
+
 #print(time_series[25][0])
 #print((time_series[25][0] % 86400))
 #day_start_epoch = time_series[25][0] - (time_series[25][0] % 86400)
 #print(day_start_epoch)
 
-#compute_daily_max_difference(time_series)
+lista = compute_daily_max_difference(time_series)
 
-x = time_series[1][0] - time_series[1][0] % 86400
+for item in lista:
+    print(item)
+
+#x = time_series[1][0] - time_series[1][0] % 86400
 
 
-print(time_series[0][0])
-print(time_series[1][0] - time_series[1][0] % 86400)
-if time_series[0][0] == x:
-    print("Uguali")
+#print(time_series[0][0])
+#print(time_series[1][0] - time_series[1][0] % 86400)
+#if time_series[0][0] == x:
+#    print("Uguali")
 
 #day_start_epoch = epoch - (epoch % 86400)
