@@ -40,49 +40,56 @@ class CSVTimeSeriesFile:
             file.close()
 
             return(data)
-
+# (time_series[i][0] - (time_series[j][0] % 86400))
 def compute_daily_max_difference(time_series):
+
     values = []
     lung = len(time_series)
 
+    prec = 0
+    succ = 0
+
+    singolo = FALSE
+
+    #k = 0
+
     for i in range(lung):
 
-        trovato = FALSE
+        # Controllo giorni singoli
+        print("**********")
+        if i != 0:
+            prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
+            #print("i:",i, "prec:", prec)
+
+        attu = (time_series[i][0] - (time_series[i][0] % 86400))
+        #print("i:",i,"attu:", attu,"time:",time_series[i][0])
+
+        if i != lung-1:
+            succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
+            #print("i:",i, "succ:", succ)
+
         temp = 0
 
-        if(i != lung-1):
+        if i == 0 and attu != succ:
+            print("singolo")
+            temp = None
+            singolo = TRUE
+
+        if i != 0 and prec != attu and attu != succ:
+            print("singolo")
+            temp = None
+            singolo = TRUE
+
+        if singolo == FALSE:
 
             j = i
 
-            if(i != 0):
-                prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
-
-            att = time_series[i][0] - (time_series[i][0] % 86400)
-            succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
-
-            if(i == 0 and att != succ):
-                #print(att ,"vs", succ)
-                trovato = TRUE
-                temp = None
-
-            if(i != 0 and att != succ and prec != att):
-                #print(prec, att, succ)
-                trovato = TRUE
-                temp = None
-            else:
-                #print(att, succ)
-                while(j != lung-1 and ( (time_series[j][0] - (time_series[j][0] % 86400)) == (time_series[j+1][0] - (time_series[j+1][0] % 86400)))):
-                    #print(j, "vs", j+1)
-                    if abs(time_series[j][1] - time_series[j+1][1]) > temp:
-                        temp = abs(time_series[j][1] - time_series[j+1][1])
-                        trovato = TRUE
- 
-                    j = j + 1
-        
-            if trovato == TRUE:
-                #print(temp)
-                values.append(temp)
-                trovato = FALSE
+            while (j < lung-1 and ((time_series[j][0] - (time_series[j][0] % 86400)) == attu)):
+                if abs(time_series[i][1] - time_series[j][1]) > temp:
+                    temp = abs(time_series[i][1] - time_series[j][1])
+                j+=1
+    
+        values.append(temp)
 
     return(values)
 
@@ -103,8 +110,8 @@ for i in range(len(time_series)):
 #compute_daily_max_difference(time_series)
 results = compute_daily_max_difference(time_series)
 
-print("Cambiamenti rievati:",len(results))
-
 for item in results:
     print(item)
+
+print("Cambiamenti rievati:",len(results))
 
