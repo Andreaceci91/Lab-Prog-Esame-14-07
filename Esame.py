@@ -41,20 +41,20 @@ class CSVTimeSeriesFile:
 def compute_daily_max_difference(time_series):
     
     values  = []
-    
+    temp = 0   
 
     for i in range(len(time_series)):
-        temp = 0
         j = i
         while (time_series[i][0] - (time_series[j][0] % 86400)) == time_series[i][0]:
             if abs(time_series[i][1] - time_series[j][1]) > temp:
                 temp = abs(time_series[i][1] - time_series[j][1])
             j+=1
         values.append(temp)
-    
+
     return(values)
 
 
+ 
 #==============================
 #  Corpo del programma
 #==============================
