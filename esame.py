@@ -2,7 +2,9 @@
 #  Classe per file CSV
 #==============================
 
+from audioop import add
 from lib2to3.pgen2.token import EQUAL
+from operator import truediv
 from pickle import FALSE, TRUE
 from time import time
 
@@ -40,27 +42,47 @@ class CSVTimeSeriesFile:
             return(data)
 
 def compute_daily_max_difference(time_series):
-    
-    values  = []
-    massimo = FALSE
+    values = []
+    lung = len(time_series)
 
-    for i in range(len(time_series)):
-        temp = 0   
+    for i in range(lung):
+
         trovato = FALSE
-        j = i
-        #print("- i:",i)
-        while (time_series[j][0] - (time_series[j][0] % 86400)) == time_series[i][0] and massimo is not TRUE:
-            #print("j:", j,"=", time_series[j][0])
-            #print((time_series[j][0] - (time_series[j][0] % 86400)),"=",time_series[i][0])
-            if j == len(time_series)-1:
-                massimo = TRUE
+        temp = 0
+
+        if(i != lung-1):
+
+            j = i
+
+            if(i != 0):
+                prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
+
+            att = time_series[i][0] - (time_series[i][0] % 86400)
+            succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
+
+            if(i == 0 and att != succ):
+                #print(att ,"vs", succ)
+                trovato = TRUE
+                temp = None
+
+            if(i != 0 and att != succ and prec != att):
+                #print(prec, att, succ)
+                trovato = TRUE
+                temp = None
             else:
-                if abs(time_series[i][1] - time_series[j][1]) > temp:
-                    temp = abs(time_series[i][1] - time_series[j][1])
-                    trovato = TRUE 
-                j+=1
-        if(trovato is TRUE):
-            values.append(temp)
+                #print(att, succ)
+                while(j != lung-1 and ( (time_series[j][0] - (time_series[j][0] % 86400)) == (time_series[j+1][0] - (time_series[j+1][0] % 86400)))):
+                    #print(j, "vs", j+1)
+                    if abs(time_series[j][1] - time_series[j+1][1]) > temp:
+                        temp = abs(time_series[j][1] - time_series[j+1][1])
+                        trovato = TRUE
+ 
+                    j = j + 1
+        
+            if trovato == TRUE:
+                #print(temp)
+                values.append(temp)
+                trovato = FALSE
 
     return(values)
 
@@ -78,25 +100,11 @@ for i in range(len(time_series)):
     time_series[i][0] = int(time_series[i][0])
     time_series[i][1] = float(time_series[i][1])
 
+#compute_daily_max_difference(time_series)
 results = compute_daily_max_difference(time_series)
 
+print("Cambiamenti rievati:",len(results))
 
-#print(time_series[25][0])
-#print((time_series[25][0] % 86400))
-#day_start_epoch = time_series[25][0] - (time_series[25][0] % 86400)
-#print(day_start_epoch)
-
-lista = compute_daily_max_difference(time_series)
-
-for item in lista:
+for item in results:
     print(item)
 
-#x = time_series[1][0] - time_series[1][0] % 86400
-
-
-#print(time_series[0][0])
-#print(time_series[1][0] - time_series[1][0] % 86400)
-#if time_series[0][0] == x:
-#    print("Uguali")
-
-#day_start_epoch = epoch - (epoch % 86400)
