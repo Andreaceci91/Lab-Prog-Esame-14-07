@@ -42,6 +42,29 @@ def compute_daily_max_difference(time_series):
     
     values  = []
     temp = 0
+    check = 0
+
+    while i != len(time_series) and check is not 1:
+        j = i
+        while (time_series[j][0] - (time_series[j][0] % 86400)) == time_series[i][0]:
+            if abs(time_series[i][1]-time_series[j][1]) > temp:
+                temp = abs(time_series[i][1]-time_series[j][1])
+            j +=1
+        values.append(temp)
+
+        if(j == len(time_series)):
+            check = 1
+        else:
+            i = j + 1
+
+
+
+
+
+
+
+
+
 
     for i in range(len(time_series)):
         j = i
