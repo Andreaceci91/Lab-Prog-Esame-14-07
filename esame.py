@@ -41,8 +41,10 @@ class CSVTimeSeriesFile:
 
             return(data)
 # (time_series[i][0] - (time_series[j][0] % 86400))
+
 def compute_daily_max_difference(time_series):
 
+    # Dichiariazione variabili
     values = []
     lung = len(time_series)
 
@@ -51,12 +53,18 @@ def compute_daily_max_difference(time_series):
 
     singolo = FALSE
 
-    #k = 0
+    i = 0
 
-    for i in range(lung):
-
-        # Controllo giorni singoli
+    #for i in range(10):
+    while i < lung:
         print("**********")
+
+        print("i prima del ciclo:", i)
+        # Dichiarazione Variabili
+        temp = 0
+
+        # Calcolo prec - attu - succ
+
         if i != 0:
             prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
             #print("i:",i, "prec:", prec)
@@ -68,8 +76,7 @@ def compute_daily_max_difference(time_series):
             succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
             #print("i:",i, "succ:", succ)
 
-        temp = 0
-
+        # Controllo giorni singoli
         if i == 0 and attu != succ:
             print("singolo")
             temp = None
@@ -80,6 +87,7 @@ def compute_daily_max_difference(time_series):
             temp = None
             singolo = TRUE
 
+        # Ciclo giorni non singoli
         if singolo == FALSE:
 
             j = i
@@ -88,7 +96,16 @@ def compute_daily_max_difference(time_series):
                 if abs(time_series[i][1] - time_series[j][1]) > temp:
                     temp = abs(time_series[i][1] - time_series[j][1])
                 j+=1
-    
+            
+            i = j
+            i+=1
+
+            #print("i:", i)
+            #print("j:", j)
+
+        print("i:", i)
+        print("j:", j)
+
         values.append(temp)
 
     return(values)
@@ -111,7 +128,8 @@ for i in range(len(time_series)):
 results = compute_daily_max_difference(time_series)
 
 for item in results:
-    print(item)
+    #print(item)
+    None
 
 print("Cambiamenti rievati:",len(results))
 
