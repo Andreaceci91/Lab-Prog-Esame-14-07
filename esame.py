@@ -2,7 +2,9 @@
 #  Classe per file CSV
 #==============================
 
+from audioop import add
 from lib2to3.pgen2.token import EQUAL
+from operator import truediv
 from pickle import FALSE, TRUE
 from time import time
 
@@ -38,29 +40,73 @@ class CSVTimeSeriesFile:
             file.close()
 
             return(data)
+# (time_series[i][0] - (time_series[j][0] % 86400))
 
 def compute_daily_max_difference(time_series):
-    
-    values  = []
-    massimo = FALSE
 
-    for i in range(len(time_series)):
-        temp = 0   
-        trovato = FALSE
-        j = i
-        #print("- i:",i)
-        while (time_series[j][0] - (time_series[j][0] % 86400)) == time_series[i][0] and massimo is not TRUE:
-            #print("j:", j,"=", time_series[j][0])
-            #print((time_series[j][0] - (time_series[j][0] % 86400)),"=",time_series[i][0])
-            if j == len(time_series)-1:
-                massimo = TRUE
-            else:
+    # Dichiariazione variabili
+    values = []
+    lung = len(time_series)
+
+    prec = 0
+    succ = 0
+
+    singolo = FALSE
+
+    i = 0
+
+    #for i in range(10):
+    while i < lung:
+        print("**********")
+
+        print("i prima del ciclo:", i)
+        # Dichiarazione Variabili
+        temp = 0
+
+        # Calcolo prec - attu - succ
+
+        if i != 0:
+            prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
+            #print("i:",i, "prec:", prec)
+
+        attu = (time_series[i][0] - (time_series[i][0] % 86400))
+        #print("i:",i,"attu:", attu,"time:",time_series[i][0])
+
+        if i != lung-1:
+            succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
+            #print("i:",i, "succ:", succ)
+
+        # Controllo giorni singoli
+        if i == 0 and attu != succ:
+            print("singolo")
+            temp = None
+            singolo = TRUE
+
+        if i != 0 and prec != attu and attu != succ:
+            print("singolo")
+            temp = None
+            singolo = TRUE
+
+        # Ciclo giorni non singoli
+        if singolo == FALSE:
+
+            j = i
+
+            while (j < lung-1 and ((time_series[j][0] - (time_series[j][0] % 86400)) == attu)):
                 if abs(time_series[i][1] - time_series[j][1]) > temp:
                     temp = abs(time_series[i][1] - time_series[j][1])
-                    trovato = TRUE 
                 j+=1
-        if(trovato is TRUE):
-            values.append(temp)
+            
+            i = j
+            i += 1
+
+            #print("i:", i)
+            #print("j:", j)
+
+        print("i:", i)
+        print("j:", j)
+
+        values.append(temp)
 
     return(values)
 
@@ -78,25 +124,12 @@ for i in range(len(time_series)):
     time_series[i][0] = int(time_series[i][0])
     time_series[i][1] = float(time_series[i][1])
 
+#compute_daily_max_difference(time_series)
 results = compute_daily_max_difference(time_series)
 
+for item in results:
+    #print(item)
+    None
 
-#print(time_series[25][0])
-#print((time_series[25][0] % 86400))
-#day_start_epoch = time_series[25][0] - (time_series[25][0] % 86400)
-#print(day_start_epoch)
+print("Cambiamenti rievati:",len(results))
 
-lista = compute_daily_max_difference(time_series)
-
-for item in lista:
-    print(item)
-
-#x = time_series[1][0] - time_series[1][0] % 86400
-
-
-#print(time_series[0][0])
-#print(time_series[1][0] - time_series[1][0] % 86400)
-#if time_series[0][0] == x:
-#    print("Uguali")
-
-#day_start_epoch = epoch - (epoch % 86400)
