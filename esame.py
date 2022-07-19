@@ -56,35 +56,38 @@ def compute_daily_max_difference(time_series):
     i = 0
     j = 0
 
-    #for i in range(10):
+
     while i < lung:
-        print("**********")
+        #print("**********")
+        
+        print(i)
+        
+        singolo = FALSE
 
-        #print("i prima del ciclo:", i)
-        # Dichiarazione Variabili
         temp = 0
-
-        # Calcolo prec - attu - succ
 
         if i != 0:
             prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
-            print("i:",i, "prec:", prec)
 
         attu = (time_series[i][0] - (time_series[i][0] % 86400))
-        print("i:",i,"attu:", attu,"time:",time_series[i][0])
 
         if i != lung-1:
+            #print("sono qui")
             succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
-            print("i:",i+1, "succ:", succ)
+
+        print("prec:",prec, "attu:",attu, "succ:",succ)
+
+        if attu != succ: 
+            print("maggiore")
 
         # Controllo giorni singoli
-        if i == 0 and attu != succ:
-            print("singolo")
-            temp = None
-            singolo = TRUE
-            #j += 1
+        #if i == 0 and attu != succ:
+        #    print("singolo")
+        #    temp = None
+        #    singolo = TRUE
+        #    j += 1
 
-        if i != 0 and prec != attu and attu != succ:
+        if prec != attu and attu != succ:
             print("singolo")
             temp = None
             singolo = TRUE
@@ -93,27 +96,20 @@ def compute_daily_max_difference(time_series):
         # Ciclo giorni non singoli
         if singolo == FALSE:
 
-            #print("Siamo qui")
             j = i
 
             while (j < lung-1 and ((time_series[j][0] - (time_series[j][0] % 86400)) == attu)):
                 if abs(time_series[i][1] - time_series[j][1]) > temp:
                     temp = abs(time_series[i][1] - time_series[j][1])
                 j+=1
-            
-            #print(i)
-            #i = j
+            print("-i:",i,"time:", time_series[i][0])
+            print("-j:",j,"time:", time_series[j][0])
+            i = j
             #i += 1
+        #print("Esco")
 
-            #print("i:", i)
-            #print("j:", j)
-
-        #print("i:", i)
-        #print("j:", j)
-
-        i = j
+        
         i += 1
-        #i += 1
         
         values.append(temp)
 
@@ -137,7 +133,7 @@ for i in range(len(time_series)):
 results = compute_daily_max_difference(time_series)
 
 for item in results:
-    print(item)
+    #print(item)
     None
 
 print("Cambiamenti rievati:",len(results))
