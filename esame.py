@@ -14,7 +14,7 @@ class CSVTimeSeriesFile:
 
         self.can_read = TRUE
         try:
-            file = open('data.csv', 'r')
+            file = open('data_2.csv', 'r')
             file.readline()
         except Exception as error:
             self.can_read = FALSE
@@ -54,12 +54,13 @@ def compute_daily_max_difference(time_series):
     singolo = FALSE
 
     i = 0
+    j = 0
 
     #for i in range(10):
     while i < lung:
         print("**********")
 
-        print("i prima del ciclo:", i)
+        #print("i prima del ciclo:", i)
         # Dichiarazione Variabili
         temp = 0
 
@@ -67,29 +68,32 @@ def compute_daily_max_difference(time_series):
 
         if i != 0:
             prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
-            #print("i:",i, "prec:", prec)
+            print("i:",i, "prec:", prec)
 
         attu = (time_series[i][0] - (time_series[i][0] % 86400))
-        #print("i:",i,"attu:", attu,"time:",time_series[i][0])
+        print("i:",i,"attu:", attu,"time:",time_series[i][0])
 
         if i != lung-1:
             succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
-            #print("i:",i, "succ:", succ)
+            print("i:",i+1, "succ:", succ)
 
         # Controllo giorni singoli
         if i == 0 and attu != succ:
             print("singolo")
             temp = None
             singolo = TRUE
+            #j += 1
 
         if i != 0 and prec != attu and attu != succ:
             print("singolo")
             temp = None
             singolo = TRUE
+            #j += 1
 
         # Ciclo giorni non singoli
         if singolo == FALSE:
 
+            #print("Siamo qui")
             j = i
 
             while (j < lung-1 and ((time_series[j][0] - (time_series[j][0] % 86400)) == attu)):
@@ -97,15 +101,20 @@ def compute_daily_max_difference(time_series):
                     temp = abs(time_series[i][1] - time_series[j][1])
                 j+=1
             
-            i = j
-            i += 1
+            #print(i)
+            #i = j
+            #i += 1
 
             #print("i:", i)
             #print("j:", j)
 
-        print("i:", i)
-        print("j:", j)
+        #print("i:", i)
+        #print("j:", j)
 
+        i = j
+        i += 1
+        #i += 1
+        
         values.append(temp)
 
     return(values)
@@ -114,7 +123,7 @@ def compute_daily_max_difference(time_series):
 #  Corpo del programma
 #==============================
 
-time_series_file = CSVTimeSeriesFile(name='data.csv')
+time_series_file = CSVTimeSeriesFile(name='data_2.csv')
 
 time_series = time_series_file.get_data()
 
@@ -128,7 +137,7 @@ for i in range(len(time_series)):
 results = compute_daily_max_difference(time_series)
 
 for item in results:
-    #print(item)
+    print(item)
     None
 
 print("Cambiamenti rievati:",len(results))
