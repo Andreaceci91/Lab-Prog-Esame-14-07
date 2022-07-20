@@ -14,7 +14,7 @@ class CSVTimeSeriesFile:
 
         self.can_read = TRUE
         try:
-            file = open('data_2.csv', 'r')
+            file = open(name, 'r')
             file.readline()
         except Exception as error:
             self.can_read = FALSE
@@ -56,29 +56,40 @@ def compute_daily_max_difference(time_series):
     i = 0
     j = 0
 
+    print("i prima del while:",i)
+
 
     while i < lung:
-        #print("**********")
+        print("**********")
         
-        print(i)
+        print("i:",i)
         
         singolo = FALSE
+        print("- singolo:",singolo)
 
         temp = 0
+        print("temp",temp)
 
         if i != 0:
             prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
+            print("prec",time_series[i-1][0])
+            print("prec pulito",prec)
 
         attu = (time_series[i][0] - (time_series[i][0] % 86400))
+        print("attu",time_series[i][0])
+        print("attu pulito",attu)
 
+        print(i)
+        #print("-- Prova:", time_series[54][0])
         if i != lung-1:
-            #print("sono qui")
             succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
+            print("succ",time_series[i+1][0])
+            print("succ pulito",succ)
 
-        print("prec:",prec, "attu:",attu, "succ:",succ)
+        #print("prec:",prec, "attu:",attu, "succ:",succ)
 
         if attu != succ: 
-            print("maggiore")
+            print("attu maggiore di succ")
 
         # Controllo giorni singoli
         #if i == 0 and attu != succ:
@@ -87,31 +98,44 @@ def compute_daily_max_difference(time_series):
         #    singolo = TRUE
         #    j += 1
 
-        if prec != attu and attu != succ:
-            print("singolo")
+        if attu != succ and i == 0:
+            print("Singolo: attu != succ and i == 0")
+            temp = None
+            singolo = TRUE
+
+        if prec != attu and attu != succ and i != 0:
+            print("Singolo: prec != attu and attu != succ and i != 0")
             temp = None
             singolo = TRUE
             #j += 1
 
+        if prec != attu and i == lung-1 :
+            print("Singolo: prec != attu and attu != succ and i != 0")
+            temp = None
+            singolo = TRUE
+            
         # Ciclo giorni non singoli
         if singolo == FALSE:
-
+            print("Sono in: IF singolo == FALSE")
             j = i
 
-            while (j < lung-1 and ((time_series[j][0] - (time_series[j][0] % 86400)) == attu)):
+            while (j < lung and ((time_series[j][0] - (time_series[j][0] % 86400)) == attu)):
                 if abs(time_series[i][1] - time_series[j][1]) > temp:
                     temp = abs(time_series[i][1] - time_series[j][1])
                 j+=1
-            print("-i:",i,"time:", time_series[i][0])
-            print("-j:",j,"time:", time_series[j][0])
-            i = j
+            #print("-i:",i,"time:", time_series[i][0])
+            #print("-j:",j,"time:", time_series[j][0])
+            i = j-1
             #i += 1
         #print("Esco")
 
         
         i += 1
-        
+        print("i+=1:", i)
+        print("temp in append",temp)
         values.append(temp)
+
+        print("\nlung", lung)
 
     return(values)
 
@@ -132,8 +156,9 @@ for i in range(len(time_series)):
 #compute_daily_max_difference(time_series)
 results = compute_daily_max_difference(time_series)
 
+print("\n*** Lista ***")
 for item in results:
-    #print(item)
+    print(item)
     None
 
 print("Cambiamenti rievati:",len(results))
