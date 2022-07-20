@@ -1,12 +1,12 @@
-#==============================
-#  Classe per file CSV
-#==============================
 
 from audioop import add
 from lib2to3.pgen2.token import EQUAL
 from operator import truediv
 from pickle import FALSE, TRUE
 from time import time
+
+class ExamException(Exception):
+    pass
 
 class CSVTimeSeriesFile:
     def __init__(self, name):
@@ -143,7 +143,7 @@ def compute_daily_max_difference(time_series):
 #  Corpo del programma
 #==============================
 
-time_series_file = CSVTimeSeriesFile(name='data_2.csv')
+time_series_file = CSVTimeSeriesFile(name='data.csv')
 
 time_series = time_series_file.get_data()
 
