@@ -8,6 +8,7 @@ from time import time
 class ExamException(Exception):
     pass
 
+
 class CSVTimeSeriesFile:
     def __init__(self, name):
         self.name = name
@@ -16,9 +17,10 @@ class CSVTimeSeriesFile:
         try:
             file = open(name, 'r')
             file.readline()
-        except Exception as error:
+        except:
+            raise ExamException('Impossibile aprire il file')
             self.can_read = FALSE
-            print('Errore in apertura del file: "{}"'.format(error))
+            #print('Errore in apertura del file: "{}"'.format(error))
     
     def get_data(self):  
             
@@ -39,7 +41,31 @@ class CSVTimeSeriesFile:
             
             file.close()
 
+            if len(data) == 0:
+                raise ExamException('Il file non ha valori al suo interno')
+
+
+            for i in range(len(data)):
+                try:
+                    data[i][0] = int(data[i][0])
+                    data[i][1] = float(data[i][1])
+                except:
+                    raise ExamException("Errore nella conversione dei dati")
+
+            for i in range(len(data)-1):
+                j = i+1    
+                while j != len(data):
+                    
+                    if data[i][0] >= data[j][0]:
+                        raise ExamException("Epoch non ordinati correttamente")
+                        None
+
+                    j += 1
+                    
+            
             return(data)
+
+
 # (time_series[i][0] - (time_series[j][0] % 86400))
 
 def compute_daily_max_difference(time_series):
@@ -149,9 +175,9 @@ time_series = time_series_file.get_data()
 
 print('********************************')
 
-for i in range(len(time_series)):
-    time_series[i][0] = int(time_series[i][0])
-    time_series[i][1] = float(time_series[i][1])
+#for i in range(len(time_series)):
+#    time_series[i][0] = int(time_series[i][0])
+#    time_series[i][1] = float(time_series[i][1])
 
 #compute_daily_max_difference(time_series)
 results = compute_daily_max_difference(time_series)
