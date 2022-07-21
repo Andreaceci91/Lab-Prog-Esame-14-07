@@ -1,50 +1,63 @@
 
+# Import the libraries
 from audioop import add
 from lib2to3.pgen2.token import EQUAL
 from operator import truediv
 from pickle import FALSE, TRUE
 from time import time
 
+# Create the class ExamExeption
 class ExamException(Exception):
     pass
 
-
+# Create Class CSVTimeSeriesFile
 class CSVTimeSeriesFile:
+
+    # Use magic method __ini__ to initialize the attribute of class
     def __init__(self, name):
         self.name = name
 
-        self.can_read = TRUE
+        # Try to open the file
         try:
             file = open(name, 'r')
             file.readline()
+        
+        # If i can't open the file, I raise an exception 
         except:
             raise ExamException('Impossibile aprire il file')
-            self.can_read = FALSE
             #print('Errore in apertura del file: "{}"'.format(error))
     
+# Create a function get_data
     def get_data(self):  
             
+            #Create a empty list
             data = []
     
-            # Apro il file
+            # Open the file
             file = open(self.name, 'r')
+
 
             for line in file:
                 
+                # Split the element on "," that separates the value
                 elements = line.split(',')
                 
+                # Remove the newline character and black space
                 elements[-1] = elements[-1].strip()
                 
+                #If the element in first position is different by epoch i will add at the list
                 if elements[0] != 'epoch':
                     
                     data.append(elements)
             
+            # Close the file
             file.close()
 
+            # Raise an exception if the file is empty
             if len(data) == 0:
                 raise ExamException('Il file non ha valori al suo interno')
 
-
+            # Try to convert data else raise an exception
             for i in range(len(data)):
                 try:
                     data[i][0] = int(data[i][0])
@@ -52,6 +65,7 @@ class CSVTimeSeriesFile:
                 except:
                     raise ExamException("Errore nella conversione dei dati")
 
+            # Check if epoch are sorted correctly
             for i in range(len(data)-1):
                 j = i+1    
                 while j != len(data):
@@ -62,15 +76,13 @@ class CSVTimeSeriesFile:
 
                     j += 1
                     
-            
+            # If all the check are ok, return data
             return(data)
 
-
-# (time_series[i][0] - (time_series[j][0] % 86400))
-
+# Create function to control the difference of values of temperature
 def compute_daily_max_difference(time_series):
 
-    # Dichiariazione variabili
+    # Declare variables
     values = []
     lung = len(time_series)
 
@@ -82,110 +94,72 @@ def compute_daily_max_difference(time_series):
     i = 0
     j = 0
 
-    print("i prima del while:",i)
-
-
+    # Create a cycle in which I slide the elements in the list
     while i < lung:
-        print("**********")
         
-        print("i:",i)
-        
+        # Use a variable to check if there are a single measure
         singolo = FALSE
-        print("- singolo:",singolo)
 
         temp = 0
-        print("temp",temp)
 
+        # Calculate the value before if the i is different by 0
         if i != 0:
             prec = (time_series[i-1][0] - (time_series[i-1][0] % 86400))
-            print("prec",time_series[i-1][0])
-            print("prec pulito",prec)
 
+        # Calculate the current value
         attu = (time_series[i][0] - (time_series[i][0] % 86400))
-        print("attu",time_series[i][0])
-        print("attu pulito",attu)
 
-        print(i)
-        #print("-- Prova:", time_series[54][0])
+        # Calculate the next value
         if i != lung-1:
             succ = (time_series[i+1][0] - (time_series[i+1][0] % 86400))
-            print("succ",time_series[i+1][0])
-            print("succ pulito",succ)
-
-        #print("prec:",prec, "attu:",attu, "succ:",succ)
-
-        if attu != succ: 
-            print("attu maggiore di succ")
-
-        # Controllo giorni singoli
-        #if i == 0 and attu != succ:
-        #    print("singolo")
-        #    temp = None
-        #    singolo = TRUE
-        #    j += 1
 
         if attu != succ and i == 0:
-            print("Singolo: attu != succ and i == 0")
             temp = None
             singolo = TRUE
 
         if prec != attu and attu != succ and i != 0:
-            print("Singolo: prec != attu and attu != succ and i != 0")
             temp = None
             singolo = TRUE
-            #j += 1
 
         if prec != attu and i == lung-1 :
-            print("Singolo: prec != attu and attu != succ and i != 0")
             temp = None
             singolo = TRUE
             
-        # Ciclo giorni non singoli
         if singolo == FALSE:
-            print("Sono in: IF singolo == FALSE")
             j = i
 
+            # Create a Cycle to check the difference of Temperature in the Liste
             while (j < lung and ((time_series[j][0] - (time_series[j][0] % 86400)) == attu)):
                 if abs(time_series[i][1] - time_series[j][1]) > temp:
                     temp = abs(time_series[i][1] - time_series[j][1])
                 j+=1
-            #print("-i:",i,"time:", time_series[i][0])
-            #print("-j:",j,"time:", time_series[j][0])
-            i = j-1
-            #i += 1
-        #print("Esco")
 
-        
+            i = j-1
+
         i += 1
-        print("i+=1:", i)
-        print("temp in append",temp)
+
+        # Attach temp at the list
         values.append(temp)
 
-        print("\nlung", lung)
-
+    # Return list of values
     return(values)
 
 #==============================
 #  Corpo del programma
 #==============================
 
-time_series_file = CSVTimeSeriesFile(name='data.csv')
+time_series_file = CSVTimeSeriesFile(name='data_2.csv')
 
+# Use function Getdata and save value in Time_series
 time_series = time_series_file.get_data()
 
-print('********************************')
-
-#for i in range(len(time_series)):
-#    time_series[i][0] = int(time_series[i][0])
-#    time_series[i][1] = float(time_series[i][1])
-
-#compute_daily_max_difference(time_series)
+# Invoce function below to calculare difference of temperature
 results = compute_daily_max_difference(time_series)
 
-print("\n*** Lista ***")
-for item in results:
-    print(item)
-    None
+#print("\n***  Lista  ***")
+#for item in results:
+#    print(item)
+#    None
 
-print("Cambiamenti rievati:",len(results))
+#print("Cambiamenti rievati:",len(results))
 
