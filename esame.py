@@ -163,7 +163,7 @@ def compute_daily_max_difference(time_series):
 #  Corpo del programma
 #==============================
 
-time_series_file = CSVTimeSeriesFile(name='data4.csv')
+time_series_file = CSVTimeSeriesFile(name='data.csv')
 
 # Use function Getdata and save value in Time_series
 time_series = time_series_file.get_data()
