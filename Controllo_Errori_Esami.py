@@ -7,7 +7,7 @@ import unittest
 import tempfile
 import warnings
 
-from esame import CSVTimeSeriesFile, hourly_trend_changes, ExamException
+from esame import CSVTimeSeriesFile, compute_daily_max_difference
 
  
 score = 0
