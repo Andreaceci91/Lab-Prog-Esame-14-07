@@ -17,20 +17,21 @@ class CSVTimeSeriesFile:
     def __init__(self, name):
         self.name = name
 
-        # Try to open the file
-        try:
-            file = open(name, 'r')
-            file.readline()
-        
-        # If i can't open the file, I raise an exception 
-        except:
-            raise ExamException('Impossibile aprire il file')
-            #print('Errore in apertura del file: "{}"'.format(error))
     
 # Create a function get_data
     def get_data(self):  
+            # Try to open the file
+            try:
+                file = open(self.name, 'r')
+                file.readline()
+        
+            # If i can't open the file, I raise an exception 
+            except:
+                raise ExamException('Impossibile aprire il file')
+                #print('Errore in apertura del file: "{}"'.format(error))
             
             #Create a empty list
+            data_temp = []
             data = []
     
             # Open the file
@@ -48,22 +49,36 @@ class CSVTimeSeriesFile:
                 #If the element in first position is different by epoch i will add at the list
                 if elements[0] != 'epoch':
                     
-                    data.append(elements)
+                    data_temp.append(elements)
             
             # Close the file
             file.close()
 
             # Raise an exception if the file is empty
-            if len(data) == 0:
+            if len(data_temp) == 0:
                 raise ExamException('Il file non ha valori al suo interno')
 
-            # Try to convert data else raise an exception
-            for i in range(len(data)):
+            j = 0
+
+            file_uno = open("/Users/andrea/Desktop/Lab-Prog-Esame-14-07/export.txt", "a")
+
+            # Try to convert data 
+            for i in range(len(data_temp)):
                 try:
-                    data[i][0] = int(data[i][0])
-                    data[i][1] = float(data[i][1])
+                    #print("*****")
+                    time_app = int(float(data_temp[i][0]))
+                    temp_app = float(data_temp[i][1])
+                    #print("Time:", time_app, "Temp:", temp_app)
+                    lista_temp = (time_app, temp_app)
+
+                    file_uno.write(str(lista_temp)+ "\n")
+                    data.append(lista_temp)
+
                 except:
-                    raise ExamException("Errore nella conversione dei dati")
+                    pass
+                    #raise ExamException("Errore nella conversione dei dati")
+
+            file_uno.close()
 
             # Check if epoch are sorted correctly
             for i in range(len(data)-1):
@@ -148,7 +163,7 @@ def compute_daily_max_difference(time_series):
 #  Corpo del programma
 #==============================
 
-time_series_file = CSVTimeSeriesFile(name='data_2.csv')
+time_series_file = CSVTimeSeriesFile(name='data4.csv')
 
 # Use function Getdata and save value in Time_series
 time_series = time_series_file.get_data()
@@ -156,10 +171,10 @@ time_series = time_series_file.get_data()
 # Invoce function below to calculare difference of temperature
 results = compute_daily_max_difference(time_series)
 
-#print("\n***  Lista  ***")
-#for item in results:
-#    print(item)
-#    None
 
-#print("Cambiamenti rievati:",len(results))
+print("\n***  Lista  ***")
+for item in results:
+    print(item)
+
+print("Cambiamenti rievati:",len(results))
 
